@@ -10,8 +10,7 @@ entity GPU is
   port (  clk : in std_logic; --system clock
           rst : in std_logic; --reset
           out_pixel : out std_logic_vector(7 downto 0);
-          collision : out std_logic);
-    
+          collision : out std_logic);    
  
 end GPU;
 
@@ -126,6 +125,6 @@ begin  -- Behavioral
   end process; 
 
 
-  blank <= x_pixel > 480 or y_pixel > 272;
+  blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
 
 end Behavioral;
