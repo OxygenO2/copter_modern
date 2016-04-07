@@ -58,6 +58,7 @@ architecture Behavioral of GPU is
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
   signal blank : std_logic;
+  signal mux_out : std_logic_vector(7 downto 0);
   
 begin  -- Behavioral
   
@@ -127,4 +128,9 @@ begin  -- Behavioral
 
   blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
 
+  mux_out <= out_pixel when blank = '0' else x"00";
+
+
+
+  
 end Behavioral;
