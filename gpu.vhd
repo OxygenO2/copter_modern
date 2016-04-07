@@ -58,6 +58,7 @@ architecture Behavioral of GPU is
   signal PIXEL_CHOOSER_player_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
+  signal blank : std_logic;
   
 begin  -- Behavioral
   
@@ -81,47 +82,50 @@ begin  -- Behavioral
   
   --clk_divider
   process (clk)
-    begin
-      if rising_edge(clk) then
-        if rst ='1' then
-          clk_div <= (others => '0');
-        elsif (clk_div = 10) then
-          clk_div <= (others => '0'); 
-        else
-          clk_div <= clk_div + 1;
-        end if;
+  begin
+    if rising_edge(clk) then
+      if rst ='1' then
+        clk_div <= (others => '0');
+      elsif (clk_div = 10) then
+        clk_div <= (others => '0'); 
+      else
+        clk_div <= clk_div + 1;
       end if;
+    end if;
   end process;
   
   GPU_clk <= '1' when (clk_div = 10) else '0';
   
   --x_pixel_counter
   process (clk)
-    begin
-      if rising_edge(clk) then
-        if GPU_clk = '1' then
-          if (x_pixel = 524) then
-            x_pixel <= (others => '0');
-          else
-            x_pixel <= x_pixel + 1;
-          end if;
+  begin
+    if rising_edge(clk) then
+      if GPU_clk = '1' then
+        if (x_pixel = 524) then
+          x_pixel <= (others => '0');
+        else
+          x_pixel <= x_pixel + 1;
         end if;
       end if;
+    end if;
   end process;
   
   
   --y_pixel_counter
   process (clk)
-    begin
-      if rising_edge(clk) then
-        if GPU_clk = '1' and (x_pixel = 524) then
-          if (y_pixel = 287) then
-            y_pixel <= (others => '0');
-          else
-            y_pixel <= y_pixel +1;
-          end if;
+  begin
+    if rising_edge(clk) then
+      if GPU_clk = '1' and (x_pixel = 524) then
+        if (y_pixel = 287) then
+          y_pixel <= (others => '0');
+        else
+          y_pixel <= y_pixel +1;
         end if;
       end if;
+    end if;
   end process; 
-    
+
+
+  blank <= x_pixel > 480 or y_pixel > 272;
+
 end Behavioral;
