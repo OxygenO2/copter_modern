@@ -57,9 +57,9 @@ architecture Behavioral of GPU is
   signal PIXEL_CHOOSER_player_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
+  signal PIXEL_CHOOSER_out : std_logic_vector(7 downto 0);
   signal blank : std_logic;
-  signal mux_out : std_logic_vector(7 downto 0);
-  
+   
 begin  -- Behavioral
   
 -- PIC_MEM component connection
@@ -77,7 +77,7 @@ begin  -- Behavioral
                               player_pixel => PIXEL_CHOOSER_player_pixel,
                               tile_pixel => PIXEL_CHOOSER_tile_pixel,
                               background_pixel => PIXEL_CHOOSER_background_pixel,
-                              out_pixel => out_pixel,
+                              out_pixel => PIXEL_CHOOSER_out,
                               collision => collision);
   
   --clk_divider
@@ -125,12 +125,8 @@ begin  -- Behavioral
     end if;
   end process; 
 
-
   blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
 
-  mux_out <= out_pixel when blank = '0' else x"00";
+  out_pixel <= PIXEL_CHOOSER_out when blank = '0' else "0";
 
-
-
-  
 end Behavioral;
