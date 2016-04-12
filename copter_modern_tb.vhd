@@ -1,21 +1,24 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity copter_modern is
-  
-end;
+entity copter_modern_tb is
+end copter_modern_tb;
 
-architecture Behavioral of copter_modern is
+architecture Behavioral of copter_modern_tb is
 
-  component lab
-    port (clk : in std_logic);
+  component copter_modern
+      Port (clk : in std_logic);
   end component;
 
+  -- Testsignaler
   signal clk : std_logic;
 begin
 
+  wat: copter_modern port map(clk => clk);
+
+  -- Klocksignal 100MHz
   clk <= not clk after 5 ns;
-  
-end Behavioral;
+
+end;
