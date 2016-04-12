@@ -3,12 +3,15 @@
 -- library declaration
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;            -- basic IEEE library
+use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
 
 entity GPU is
   port (  clk : in std_logic; --system clock
           rst : in std_logic; --reset
+          cpu_x : in std_logic_vector(9 downto 0);
+          cpu_y : in std_logic_vector(8 downto 0);
           out_pixel : out std_logic_vector(7 downto 0);
           collision : out std_logic);    
  
@@ -23,13 +26,13 @@ architecture Behavioral of GPU is
          -- port 1
          we1		: in std_logic;
          data_in1	: in std_logic_vector(7 downto 0);
-         data_out1	: out std_logic_vector(7 downto 0);
-         addr1		: in unsigned(10 downto 0);
+         x1	        : in std_logic_vector(9 downto 0);
+         y1		: in std_logic_vector(8 downto 0);
          -- port 2
          we2		: in std_logic;
-         data_in2	: in std_logic_vector(7 downto 0);
          data_out2	: out std_logic_vector(7 downto 0);
-         addr2		: in unsigned(10 downto 0));  
+         x2     	: in std_logic_vector(9 downto 0);
+         y2		: in std_logic_vector(8 downto 0));  
       
   end component;
 
@@ -46,14 +49,12 @@ architecture Behavioral of GPU is
   end component;
 
   signal clk_div : unsigned(4 downto 0);
-  signal x_pixel : unsigned(9 downto 0);
-  signal y_pixel : unsigned(8 downto 0);
+  signal x_pixel : std_logic_vector(9 downto 0);
+  signal y_pixel : std_logic_vector(8 downto 0);
   signal GPU_clk : std_logic;
   signal PIC_MEM_we : std_logic;
   signal PIC_MEM_data1 : std_logic_vector(7 downto 0);
-  signal PIC_MEM_addr1 : unsigned(10 downto 0);
   signal PIC_MEM_data2 : std_logic_vector(7 downto 0);
-  signal PIC_MEM_addr2 : unsigned(10 downto 0);
   signal PIXEL_CHOOSER_player_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
@@ -66,11 +67,12 @@ begin  -- Behavioral
   PM : PIC_MEM port map(clk=>clk,
                         we1=>PIC_MEM_we,
                         data_in1=>PIC_MEM_data1,
-                        addr1=>PIC_MEM_addr1,
+                        x1=>cpu_x,
+                        y1=>cpu_y,
                         we2=>'0',
-                        data_in2=>"00000000",
                         data_out2=>PIC_MEM_data2,
-                        addr2=>PIC_MEM_addr2);
+                        x2=>x_pixel,
+                        y2=>y_pixel);
 	
   -- PIXEL_CHOOSER component connection
   PC : PIXEL_CHOOSER port map(clk => clk,
