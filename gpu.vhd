@@ -5,11 +5,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;            -- basic IEEE library
 use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
-
 entity GPU is
   port (  clk : in std_logic; --system clock
-          rst : in std_logic; --reset
-          out_pixel : out std_logic_vector(7 downto 0);
           collision : out std_logic);    
  
 end GPU;
@@ -58,6 +55,7 @@ architecture Behavioral of GPU is
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_out : std_logic_vector(7 downto 0);
+  signal out_pixel : std_logic_vector(7 downto 0);
   signal blank : std_logic;
    
 begin  -- Behavioral
@@ -84,9 +82,7 @@ begin  -- Behavioral
   process (clk)
   begin
     if rising_edge(clk) then
-      if rst ='1' then
-        clk_div <= (others => '0');
-      elsif (clk_div = 10) then
+      if (clk_div = 10) then
         clk_div <= (others => '0'); 
       else
         clk_div <= clk_div + 1;
