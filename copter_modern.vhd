@@ -11,24 +11,35 @@ architecture Behavioral of copter_modern is
 
   component CPU
     port (
-      clk :in std_logic);
+      clk : in std_logic;
+      collision : in std_logic);
     
   end component;
 
   component GPU
-    port (
-      clk : in std_logic);
-    
+  port (  clk : in std_logic; --system clock
+          cpu_x : in std_logic_vector(9 downto 0);
+          cpu_y : in std_logic_vector(8 downto 0);
+          cpu_data : in std_logic_vector(7 downto 0);
+          collision : out std_logic);
+   
   end component;
 
-  --signal collision : std_logic;
-
+  signal collision : std_logic;
+  signal cpu_x : std_logic_vector(9 downto 0);
+  signal cpu_y : std_logic_vector(8 downto 0);
+  signal cpu_data : std_logic_vector(7 downto 0);
+  
 begin  -- Behavioral
 
-  CP : CPU port map (clk => clk);
-                     --collision => collision);
-  GP : GPU port map (clk => clk);
-                     --collision => collision);
+  CP : CPU port map (clk => clk,
+                     collision => collision);
+
+  GP : GPU port map (clk => clk,
+                     cpu_x => cpu_x,
+                     cpu_y => cpu_y,
+                     cpu_data => cpu_data,
+                     collision => collision);
  
   process (clk)
     begin
