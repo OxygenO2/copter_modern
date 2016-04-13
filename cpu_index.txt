@@ -1,5 +1,5 @@
 ----------------------------
------ CPU PORT MAPPING -----
+------ CPU PORT INDEX ------
 ----------------------------
 
 No.	 Module		Port No.
@@ -7,10 +7,11 @@ No.	 Module		Port No.
 2   	 ASR		0010
 3   	 PMEM		0011
 4  	 ALU		0100
-5  	 uRES		0101
+5  	 ALU_RES	0101
 6   	 RES		0110
 7   	 IR		0111
 8   	 REG1		1000
 9   	 REG2		1001
 10  	 REG3		1010
 11  	 REG4		1011
+
