@@ -8,11 +8,10 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
 entity GPU is
   port (  clk : in std_logic; --system clock
-          rst : in std_logic; --reset
           cpu_x : in std_logic_vector(9 downto 0);
           cpu_y : in std_logic_vector(8 downto 0);
-          out_pixel : out std_logic_vector(7 downto 0);
-          collision : out std_logic);    
+          cpu_data : in std_logic_vector(7 downto 0);
+          collision : out std_logic);
  
 end GPU;
 
@@ -52,20 +51,20 @@ architecture Behavioral of GPU is
   signal y_pixel : std_logic_vector(8 downto 0);
   signal GPU_clk : std_logic;
   signal PIC_MEM_we : std_logic;
-  signal PIC_MEM_data1 : std_logic_vector(7 downto 0);
   signal PIC_MEM_data2 : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_player_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_tile_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_background_pixel : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_out : std_logic_vector(7 downto 0);
   signal blank : std_logic;
-   
+  signal out_pixel : std_logic_vector(7 downto 0);
+  
 begin  -- Behavioral
   
 -- PIC_MEM component connection
   PM : PIC_MEM port map(clk=>clk,
                         we1=>PIC_MEM_we,
-                        data_in1=>PIC_MEM_data1,
+                        data_in1=>cpu_data,
                         x1=>cpu_x,
                         y1=>cpu_y,
                         we2=>'0',
