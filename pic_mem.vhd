@@ -16,6 +16,7 @@ entity PIC_MEM is
          -- port 2
          we2		: in std_logic;
          data_out2	: out std_logic_vector(7 downto 0);
+        -- sprite_out     : out std_logic_vector(7 downto 0);
          x2             : in std_logic_vector(9 downto 0);
          y2             : in std_logic_vector(8 downto 0));
 end PIC_MEM;
@@ -24,25 +25,40 @@ end PIC_MEM;
 -- architecture
 architecture Behavioral of PIC_MEM is
 
-  signal tile_type : std_logic_vector(1 downto 0);
+  signal tile_type : std_logic;
+  signal tile_int : integer;
   
   signal x_internal : std_logic_vector(9 downto 0);
   signal y_internal : std_logic_vector(8 downto 0);
 
   signal x_mod_tile_s : integer range 0 to 7;
   signal y_mod_tile_s : integer range 0 to 7;
-  
-  
-  -- Tile_memory
-  type tile_ram is array (0 to 128) of std_logic_vector(7 downto 0);
-  signal tileMem : tile_ram := (others => "00000000");
 
-  -- tile grid type (61 * 34 = 2074)
+  
+  -- tile_grid type (61 * 34 = 2074)
   type tile_grid is array (0 to 2074) of std_logic;
   signal obstacle_grid : tile_grid := (others => '0');
 
-begin 
+  
+  -- Tile_memory type
+  type tile_ram is array (0 to 128) of std_logic_vector(7 downto 0);
+  signal tile_mem : tile_ram := (others => "00000000");
 
+begin
+  --set tile int
+  tile_int <= 1 when tile_type = '1' else 0;
+
+  --tile_grid
+  process(clk)
+    begin
+      if rising_edge(clk) then
+        if (we1 = '0') then
+          --code for port 1
+        end if;
+        tile_type <= obstacle_grid(conv_integer(y2) + (conv_integer(x2)*34));
+      end if;
+    end process;
+    
   --modulus tile_size
   x_mod_tile_s <= conv_integer(x_internal) mod 8;
   y_mod_tile_s <= conv_integer(y_internal) mod 8;
@@ -56,12 +72,15 @@ begin
     end if;
   end process;
 
-  --Tile_memory
+  --Tile memory
   process(clk)
   begin
     if rising_edge(clk) then
-      data_out2 <= tileMem((y_mod_tile_s*8) + x_mod_tile_s + (conv_integer(tile_type)*64));
+      data_out2 <= tile_mem((y_mod_tile_s*8) + x_mod_tile_s + tile_int*64);
     end if;
   end process;
 
+  --sprite memory
+  
+  
 end Behavioral;
