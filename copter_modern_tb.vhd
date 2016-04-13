@@ -16,7 +16,7 @@ architecture Behavioral of copter_modern_tb is
   signal clk : std_logic;
 begin
 
-  wat: copter_modern port map(clk => clk);
+  main: copter_modern port map(clk => clk);
 
   -- Klocksignal 100MHz
   clk <= not clk after 5 ns;
