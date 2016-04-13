@@ -6,7 +6,6 @@ use IEEE.STD_LOGIC_1164.ALL;            -- basic IEEE library
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
-
 entity GPU is
   port (  clk : in std_logic; --system clock
           rst : in std_logic; --reset
@@ -86,9 +85,7 @@ begin  -- Behavioral
   process (clk)
   begin
     if rising_edge(clk) then
-      if rst ='1' then
-        clk_div <= (others => '0');
-      elsif (clk_div = 10) then
+      if (clk_div = 10) then
         clk_div <= (others => '0'); 
       else
         clk_div <= clk_div + 1;
