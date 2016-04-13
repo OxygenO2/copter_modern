@@ -125,6 +125,6 @@ begin  -- Behavioral
 
   blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
 
-  out_pixel <= PIXEL_CHOOSER_out when blank = '0' else "0";
+  out_pixel <= PIXEL_CHOOSER_out when blank = '0' else (others => '0');
 
 end Behavioral;
