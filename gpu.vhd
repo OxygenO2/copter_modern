@@ -10,6 +10,8 @@ entity GPU is
   port (  clk : in std_logic; --system clock
           cpu_x : in std_logic_vector(9 downto 0);
           cpu_y : in std_logic_vector(8 downto 0);
+          sprite_x : in integer;
+          sprite_y : in integer;
           cpu_data : in std_logic_vector(7 downto 0);
           collision : out std_logic);
  
@@ -26,9 +28,12 @@ architecture Behavioral of GPU is
          data_in1	: in std_logic_vector(7 downto 0);
          x1	        : in std_logic_vector(9 downto 0);
          y1		: in std_logic_vector(8 downto 0);
+         sprite_x       : in integer;
+         sprite_y       : in integer;
          -- port 2
          we2		: in std_logic;
-         data_out2	: out std_logic_vector(7 downto 0);
+         tile_out	: out std_logic_vector(7 downto 0);
+         sprite_out     : out std_logic_vector(7 downto 0);
          x2     	: in std_logic_vector(9 downto 0);
          y2		: in std_logic_vector(8 downto 0));  
       
@@ -67,8 +72,11 @@ begin  -- Behavioral
                         data_in1=>cpu_data,
                         x1=>cpu_x,
                         y1=>cpu_y,
+                        sprite_x=>sprite_x,
+                        sprite_y=>sprite_y,
                         we2=>'0',
-                        data_out2=>PIC_MEM_data2,
+                        tile_out=>PIXEL_CHOOSER_tile_pixel,
+                        sprite_out=>PIXEL_CHOOSER_player_pixel,
                         x2=>x_pixel,
                         y2=>y_pixel);
 	
