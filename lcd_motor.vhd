@@ -18,24 +18,20 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 entity lcd_motor is
    Port (
          clk : in STD_LOGIC;
-         --CLK_180_I : in STD_LOGIC;
          rst : in STD_LOGIC;
-         
          x: in integer;
          y: in integer;
          z: in STD_LOGIC_VECTOR (11 downto 0);
          we : in std_logic;
          wr_clk : in std_logic;
-         
          r : out  STD_LOGIC_VECTOR (7 downto 0);
          g : out  STD_LOGIC_VECTOR (7 downto 0);
          b : out  STD_LOGIC_VECTOR (7 downto 0);
          de : out  STD_LOGIC;
-         clk_0 : out  STD_LOGIC;
+         clk_O : out  STD_LOGIC;
          disp : out  STD_LOGIC;
          bklt : out  STD_LOGIC; --PWM backlight control
          vdden_O : out STD_LOGIC;
-
          MSEL_I : in STD_LOGIC_VECTOR(3 downto 0) -- Mode selection
 	);
 end lcd_motor;

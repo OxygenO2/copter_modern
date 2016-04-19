@@ -51,7 +51,6 @@ architecture Behavioral of GPU is
   component LCD_MOTOR
    Port (
          clk : in STD_LOGIC;
-         --CLK_180_I : in STD_LOGIC;
          rst : in STD_LOGIC;
          x: in integer;
          y: in integer;
@@ -62,10 +61,10 @@ architecture Behavioral of GPU is
          g : out  STD_LOGIC_VECTOR (7 downto 0);
          b : out  STD_LOGIC_VECTOR (7 downto 0);
          de : out  STD_LOGIC;
-         clk_0 : out  STD_LOGIC;
+         clk_O : out  STD_LOGIC;
          disp : out  STD_LOGIC;
          bklt : out  STD_LOGIC; --PWM backlight control
-         vdden_0 : out STD_LOGIC;
+         vdden_O : out STD_LOGIC;
          MSEL_I : in STD_LOGIC_VECTOR(3 downto 0)); -- Mode selection
   
   end component;
@@ -90,16 +89,14 @@ architecture Behavioral of GPU is
   signal LCD_z: STD_LOGIC_VECTOR (11 downto 0);
   signal LCD_we : std_logic;
   signal LCD_wr_clk : std_logic;
-  
   signal LCD_r : STD_LOGIC_VECTOR (7 downto 0);
   signal LCD_g : STD_LOGIC_VECTOR (7 downto 0);
   signal LCD_b : STD_LOGIC_VECTOR (7 downto 0);
   signal LCD_de : STD_LOGIC;
-  signal LCD_clk_0 : STD_LOGIC;
+  signal LCD_clk_O : STD_LOGIC;
   signal LCD_disp : STD_LOGIC;
   signal LCD_bklt : STD_LOGIC; --PWM backlight control
-  signal LCD_vdden_0 : STD_LOGIC;
-
+  signal LCD_vdden_O : STD_LOGIC;
   signal LCD_msel : STD_LOGIC_VECTOR(3 downto 0); -- Mode selection
 
   
@@ -138,10 +135,10 @@ begin  -- Behavioral
                             g => LCD_g,
                             b => LCD_b,
                             de => LCD_de,
-                            clk_0 => LCD_clk_0,
+                            clk_O => LCD_clk_O,
                             disp => LCD_disp,
                             bklt => LCD_bklt,
-                            vdden_0 => LCD_vdden_0,
+                            vdden_O => LCD_vdden_O,
                             MSEL_I => LCD_msel);
 
   --clk_divider
