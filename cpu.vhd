@@ -21,11 +21,18 @@ end CPU;
 architecture Behavioral of CPU is
 
   -- Component ALU goes here
+  component ALU
+    port ( clk : in std_logic;
+           OP : in std_logic_vector(2 downto 0);
+           input : in signed(15 downto 0);
+           result : out std_logic_vector(15 downto 0));
+  end component;
 
-
+  signal alu_op : std_logic_vector(2 downto 0);
   signal data_bus : std_logic_vector(15 downto 0);
   signal pc : std_logic_vector(15 downto 0);
   signal asr : std_logic_vector(15 downto 0);
+  signal alu_input : signed(15 downto 0);
   signal alu_res : std_logic_vector(15 downto 0);
   signal res : std_logic_vector(15 downto 0);
   signal ir : std_logic_vector(31 downto 0);
@@ -63,6 +70,11 @@ architecture Behavioral of CPU is
   
 begin  -- Behavioral
 
+  ar_log_unit : ALU port map(clk => clk,
+                     OP => alu_op,
+                     input => alu_input,
+                     result => alu_res);
+                     
   -- Pushing data TO the bus
   with micro_instr(7 downto 4) select
     data_bus <= pc when "0001",    
