@@ -1,49 +1,28 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
 entity copter_modern is
   port(clk : in std_logic;
-      TP_BUSY : out std_logic;
-      TP_DIN : out std_logic;
-      TP_CS : out std_logic;
-      TP_DCLK : out std_logic;
-      TP_DOUT : out std_logic;
-      TP_PENIRQ : out std_logic;
+       TFT_CLK_O : out std_logic;      
+       TFT_DISP_O : out std_logic;
+       TFT_EN_O : out std_logic;
+       TFT_DE_O : out std_logic;
+       TFT_R_O : out  STD_LOGIC_VECTOR (7 downto 0);
+       TFT_G_O : out  STD_LOGIC_VECTOR (7 downto 0);
+       TFT_B_O : out  STD_LOGIC_VECTOR (7 downto 0);
 
-      TFT_CLK : out std_logic;
-      TFT_DISP : out std_logic;
-      TFT_EN : out std_logic;
-      TFT_DE : out std_logic;
-      LED_EN : out std_logic;
+       TP_BUSY_O : out std_logic;
+       TP_DIN_O : out std_logic;
+       TP_CS_O : out std_logic;
+       TP_DCLK_O : out std_logic;
+       TP_DOUT_O : out std_logic;
+       TP_PENIRQ_O : out std_logic;
 
-      TFT_R0 : out std_logic;
-      TFT_R1 : out std_logic;
-      TFT_R2 : out std_logic;
-      TFT_R3 : out std_logic;
-      TFT_R4 : out std_logic;
-      TFT_R5 : out std_logic;
-      TFT_R6 : out std_logic;
-      TFT_R7 : out std_logic;
-
-      TFT_B0 : out std_logic;
-      TFT_B1 : out std_logic;
-      TFT_B2 : out std_logic;
-      TFT_B3 : out std_logic;
-      TFT_B4 : out std_logic;
-      TFT_B5 : out std_logic;
-      TFT_B6 : out std_logic;
-      TFT_B7 : out std_logic;
-
-      TFT_G0 : out std_logic;
-      TFT_G1 : out std_logic;
-      TFT_G2 : out std_logic;
-      TFT_G3 : out std_logic;
-      TFT_G4 : out std_logic;
-      TFT_G5 : out std_logic;
-      TFT_G6 : out std_logic;
-      TFT_G7 : out std_logic);
+       LED_EN_O : out std_logic;
+       NC_O : out std_logic);              -- Den här gör ingenting
+      
         
 end copter_modern;
 
@@ -62,6 +41,14 @@ architecture Behavioral of copter_modern is
           sprite_x : in integer;
           sprite_y : in integer;
           cpu_data : in std_logic_vector(7 downto 0);
+          r : out  STD_LOGIC_VECTOR (7 downto 0);
+          g : out  STD_LOGIC_VECTOR (7 downto 0);
+          b : out  STD_LOGIC_VECTOR (7 downto 0);
+          de : out  STD_LOGIC;
+          clk_O : out  STD_LOGIC;
+          disp : out  STD_LOGIC;
+          bklt : out  STD_LOGIC;
+          vdden_O : out STD_LOGIC;
           collision : out std_logic);
    
   end component;
@@ -86,6 +73,13 @@ begin  -- Behavioral
                      sprite_x => sprite_x,
                      sprite_y => sprite_y,
                      cpu_data => cpu_data,
+                     r => TFT_R_O,
+                     g => TFT_G_O,
+                     b => TFT_B_O,
+                     de => TFT_DE_O,
+                     clk_O => TFT_CLK_O,
+                     disp => TFT_DISP_O,
+                     vdden_O => TFT_EN_O,
                      collision => collision);
  
   process (clk)
@@ -96,6 +90,15 @@ begin  -- Behavioral
    end process;
 
 
-    
-      
-    end Behavioral;
+      TP_BUSY_O <= '0';                   --Dummyvärde, vet inte vad det här gör
+      TP_DIN_O <= '0';                   --Dummyvärde, vet inte vad det här gör
+      TP_CS_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
+      TP_DCLK_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
+      TP_DOUT_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
+      TP_PENIRQ_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
+      LED_EN_O <= '0';                   --Dummyvärde, vet inte vad det här gör.
+                                         --Rimligtvis ska LED vara enabled dock
+      TFT_CLK_O <= clk;                 --Den här tilldelas värden i olika
+                                        --moduler vilket nog inte borde ske
+      NC_O <= '0';
+   end Behavioral;
