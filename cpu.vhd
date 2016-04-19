@@ -41,6 +41,10 @@ architecture Behavioral of CPU is
   type ram_t is array (0 to 4096) of std_logic_vector(15 downto 0);
   signal pmem : ram_t := (others => "0000000000000000");
 
+    -- micro-MEM (Max is 255 for 8 bit addresses)
+  type micro_mem_t is array (0 to 255) of std_logic_vector(7 downto 0);
+  signal micro_mem : micro_mem_t := (others => "00000000");
+
   -- ROM (mod) (Includes all 4 mods, need to be updated with correct micro-addresses)
   type mod_rom_t is array (3 downto 0) of std_logic_vector(7 downto 0);
   constant mod_rom : mod_rom_t := (x"FF", x"FF", x"00", x"00");
