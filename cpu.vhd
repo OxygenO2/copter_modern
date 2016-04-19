@@ -23,9 +23,9 @@ architecture Behavioral of CPU is
   -- Component ALU goes here
 
 
-  signal data_bus : std_logic_vector(15 downto 0); -- := "0101010101010101";
-  signal pc : std_logic_vector(15 downto 0); -- := "0000000000000000";
-  signal asr : std_logic_vector(15 downto 0); -- := "1111111111111111";
+  signal data_bus : std_logic_vector(15 downto 0);
+  signal pc : std_logic_vector(15 downto 0);
+  signal asr : std_logic_vector(15 downto 0);
   signal alu_res : std_logic_vector(15 downto 0);
   signal res : std_logic_vector(15 downto 0);
   signal ir : std_logic_vector(31 downto 0);
@@ -37,26 +37,40 @@ architecture Behavioral of CPU is
 
   signal micro_instr : std_logic_vector(7 downto 0);
 
-  -- RAM (Max is 65535 for 16 bit addresses)
+  -- PMEM (Max is 65535 for 16 bit addresses)
   type ram_t is array (0 to 4096) of std_logic_vector(15 downto 0);
   signal pmem : ram_t := (others => "0000000000000000");
 
+  -- ROM (mod) (Includes all 4 mods, need to be updated with correct micro-addresses)
+  type mod_rom_t is array (3 downto 0) of std_logic_vector(7 downto 0);
+  constant mod_rom : mod_rom_t := (x"FF", x"FF", x"00", x"00");
+    
+  -- ROM (op-code)(Number of unique instructions, size of micro-memory adress)
+  -- Will need to be updated with correct amount of instructions and micro-addresses)
+  type op_rom_t is array (5 downto 0) of std_logic_vector(7 downto 0);
+  constant op_rom : op_rom_t := (x"FF",
+                                 x"FF",
+                                 x"FF",
+                                 x"00",
+                                 x"00",
+                                 x"00");
 
+  
 begin  -- Behavioral
 
 
   with micro_instr(7 downto 4) select
-    data_bus <= pc when "0001",
+    data_bus <= pc when "0001",    
                 asr when "0010",
                 alu_res when "0101",
                 res when "0110",
-                ir when "0111",
+                ir(31 downto 16) when "0111",
                 reg1 when "1000",
                 reg2 when "1001",
                 reg3 when "1010",
                 reg4 when "1011",
                 data_bus when others;
-      
+  
   process(clk)
   begin
     if rising_edge(clk) then
@@ -69,7 +83,7 @@ begin  -- Behavioral
       elsif micro_instr(3 downto 0) = "0110" then
         res <= data_bus;
       elsif micro_instr(3 downto 0) = "0111" then
-        ir <= data_bus;
+        ir(31 downto 16) <= data_bus;
       elsif micro_instr(3 downto 0) = "1000" then
         reg1 <= data_bus;
       elsif micro_instr(3 downto 0) = "1001" then

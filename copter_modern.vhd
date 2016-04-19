@@ -42,6 +42,8 @@ architecture Behavioral of copter_modern is
   port (  clk : in std_logic; --system clock
           cpu_x : in std_logic_vector(9 downto 0);
           cpu_y : in std_logic_vector(8 downto 0);
+          sprite_x : in integer;
+          sprite_y : in integer;
           cpu_data : in std_logic_vector(7 downto 0);
           collision : out std_logic);
    
@@ -64,7 +66,11 @@ architecture Behavioral of copter_modern is
   signal TFT_EN : std_logic;
   signal TFT_DE : std_logic;
   signal LED_EN : std_logic;
-  
+
+ 
+  signal sprite_x : integer;
+  signal sprite_y : integer;
+   
   
   signal TFT_B[7] : std_logic;
   signal TFT_B[6] : std_logic;
@@ -101,6 +107,8 @@ begin  -- Behavioral
   GP : GPU port map (clk => clk,
                      cpu_x => cpu_x,
                      cpu_y => cpu_y,
+                     sprite_x => sprite_x,
+                     sprite_y => sprite_y,
                      cpu_data => cpu_data,
                      collision => collision);
  
