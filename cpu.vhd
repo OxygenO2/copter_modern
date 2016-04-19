@@ -36,6 +36,7 @@ architecture Behavioral of CPU is
   signal reg4 : std_logic_vector(15 downto 0);
 
   signal micro_instr : std_logic_vector(7 downto 0);
+  signal micro_pc : unsigned(7 downto 0);
 
   -- PMEM (Max is 65535 for 16 bit addresses)
   type ram_t is array (0 to 4096) of std_logic_vector(15 downto 0);
@@ -62,7 +63,7 @@ architecture Behavioral of CPU is
   
 begin  -- Behavioral
 
-
+  -- Pushing data TO the bus
   with micro_instr(7 downto 4) select
     data_bus <= pc when "0001",    
                 asr when "0010",
@@ -74,7 +75,8 @@ begin  -- Behavioral
                 reg3 when "1010",
                 reg4 when "1011",
                 data_bus when others;
-  
+
+  -- Pulling data FROM the bus
   process(clk)
   begin
     if rising_edge(clk) then
@@ -101,6 +103,24 @@ begin  -- Behavioral
   end process;
 
 
-
+  -- micro_pc
+  -- NOTE: MUST BE CHANGED TO COMPLETE CURRENT MICRO INSTRUCTION BEFORE HANDLING INTERRUPTS
+  --process(clk)
+  --begin
+  --  if rising_edge(clk) then
+  --    if reset = '1' then
+  --      micro_pc <= "00000000";
+  --    elsif collision = '1' then
+  --      micro_pc <= "10101010";   -- NOTE: MUST BE UPDATED WITH CORRECT MICRO ADDRESS
+  --    elsif input = '1' then
+  --      micro_pc <= "01010101";   -- NOTE: MUST BE UPDATED WITH CORRECT MICRO ADDRESS
+  --    elsif micro_mem(to_integer(unsigned(micro_pc)))(3 downto 0) = "1111"  then
+  --      -- The micro instruction tells the micro_pc to reset back to 0
+  --      micro_pc <= "00000000";
+  --    else
+  --      micro_pc <= micro_pc + 1;
+  --    end if;
+  --  end if;
+  --end process;
   
 end Behavioral;
