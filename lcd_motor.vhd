@@ -71,7 +71,10 @@ begin
   r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_R;
   g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_G;
   b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_B;
+  -- Vårt minne håller all färg i 8 bitar, här har vi 8 bitar vardera?
+
   
+
 --Clock signal
   clkStop <= '1' when state = stOff or state = stPowerUp or state = stPowerDown else '0';
 
@@ -85,12 +88,12 @@ begin
   process (clk)
    begin
       if rising_edge(clk) then
-         state <= nstate;
+         state <= nstate;               --uppdaterar den här sensitivity list nedan?
       end if;
    end process;				
 
    --next state decode
-   process (state, waitCnt, MSEL_I)
+   process (state, waitCnt, MSEL_I)     --MSEL_I. Hur funkar? Bara tredje biten?
    begin
       nstate <= state;
       case (state) is
@@ -119,6 +122,20 @@ begin
             nstate <= stOff;
           end if; 
       end case;      
+   end process;
+
+----------------------------------------------------------------------------------
+-- Wait Counter
+----------------------------------------------------------------------------------  
+   process(clk)
+   begin
+     if Rising_Edge(clk) then
+       if waitCntEn = '0' then
+         waitCnt <= 0;
+       else
+         waitCnt <= waitCnt + 1;
+       end if;
+     end if;
    end process;
    
 end Behavioral;
