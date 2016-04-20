@@ -8,6 +8,7 @@ entity copter_modern is
        TFT_CLK_O : out std_logic;      
        TFT_DISP_O : out std_logic;
        TFT_EN_O : out std_logic;
+       TFT_BKLT_O : out std_logic;
        TFT_DE_O : out std_logic;
        TFT_R_O : out  STD_LOGIC_VECTOR (7 downto 0);
        TFT_G_O : out  STD_LOGIC_VECTOR (7 downto 0);
@@ -82,6 +83,7 @@ architecture Behavioral of copter_modern is
 
   signal en_debug : std_logic;
   signal disp_debug : std_logic;
+  signal bklt_debug : std_logic;
   
 begin  -- Behavioral
 
@@ -100,6 +102,7 @@ begin  -- Behavioral
                      de => TFT_DE_O,
                      clk_O => TFT_CLK_O,
                      disp => disp_debug,
+                     bklt => bklt_debug,
                      en_O => en_debug,
                      collision => collision);
  
@@ -125,6 +128,7 @@ begin  -- Behavioral
 
       TFT_EN_O <= en_debug;
       TFT_DISP_O <= disp_debug;
+      TFT_BKLT_O <= bklt_debug;
       
       seg0 <= '1';
       seg1 <= '1';
@@ -136,7 +140,7 @@ begin  -- Behavioral
 
       led0 <= en_debug;
       led1 <= disp_debug;
-      led2 <= '0';
+      led2 <= bklt_debug;
       led3 <= '0';
       led4 <= '0';
       led5 <= '0';
