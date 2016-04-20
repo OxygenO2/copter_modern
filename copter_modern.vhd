@@ -79,6 +79,9 @@ architecture Behavioral of copter_modern is
 
   signal sprite_x : integer;
   signal sprite_y : integer;
+
+  signal en_debug : std_logic;
+  signal disp_debug : std_logic;
   
 begin  -- Behavioral
 
@@ -96,8 +99,8 @@ begin  -- Behavioral
                      b => TFT_B_O,
                      de => TFT_DE_O,
                      clk_O => TFT_CLK_O,
-                     disp => TFT_DISP_O,
-                     en_O => TFT_EN_O,
+                     disp => disp_debug,
+                     en_O => en_debug,
                      collision => collision);
  
   process (clk)
@@ -119,6 +122,10 @@ begin  -- Behavioral
                                         --moduler vilket nog inte borde ske
       NC_O <= '0';
 
+
+      TFT_EN_O <= en_debug;
+      TFT_DISP_O <= disp_debug;
+      
       seg0 <= '1';
       seg1 <= '1';
       seg2 <= '1';
@@ -127,8 +134,8 @@ begin  -- Behavioral
       seg5 <= '1';
       seg6 <= '1';
 
-      led0 <= TFT_EN_O;
-      led1 <= TFT_DISP_O;
+      led0 <= en_debug;
+      led1 <= disp_debug;
       led2 <= '0';
       led3 <= '0';
       led4 <= '0';
