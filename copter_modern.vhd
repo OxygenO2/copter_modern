@@ -21,9 +21,28 @@ entity copter_modern is
        TP_PENIRQ_O : out std_logic;
 
        LED_EN_O : out std_logic;
-       NC_O : out std_logic);              -- Den här gör ingenting
-      
-        
+       NC_O : out std_logic;              -- Den här gör ingenting
+       
+       --7-seg
+       seg0 : out std_logic;
+       seg1 : out std_logic;
+       seg2 : out std_logic;
+       seg3 : out std_logic;
+       seg4 : out std_logic;
+       seg5 : out std_logic;
+       seg6 : out std_logic;
+
+       --led
+       led0 : out std_logic;       
+       led1 : out std_logic;
+       led2 : out std_logic;
+       led3 : out std_logic;
+       led4 : out std_logic;
+       led5 : out std_logic;
+       led6 : out std_logic;
+       led7 : out std_logic
+       );    
+  
 end copter_modern;
 
 architecture Behavioral of copter_modern is
@@ -48,7 +67,7 @@ architecture Behavioral of copter_modern is
           clk_O : out  STD_LOGIC;
           disp : out  STD_LOGIC;
           bklt : out  STD_LOGIC;
-          vdden_O : out STD_LOGIC;
+          en_O : out STD_LOGIC;
           collision : out std_logic);
    
   end component;
@@ -58,10 +77,9 @@ architecture Behavioral of copter_modern is
   signal cpu_y : std_logic_vector(8 downto 0);
   signal cpu_data : std_logic_vector(7 downto 0);
 
-
   signal sprite_x : integer;
   signal sprite_y : integer;
-   
+  
 begin  -- Behavioral
 
   CP : CPU port map (clk => clk,
@@ -79,7 +97,7 @@ begin  -- Behavioral
                      de => TFT_DE_O,
                      clk_O => TFT_CLK_O,
                      disp => TFT_DISP_O,
-                     vdden_O => TFT_EN_O,
+                     en_O => TFT_EN_O,
                      collision => collision);
  
   process (clk)
@@ -88,7 +106,6 @@ begin  -- Behavioral
         
       end if;
    end process;
-
 
       TP_BUSY_O <= '0';                   --Dummyvärde, vet inte vad det här gör
       TP_DIN_O <= '0';                   --Dummyvärde, vet inte vad det här gör
@@ -101,4 +118,21 @@ begin  -- Behavioral
       TFT_CLK_O <= clk;                 --Den här tilldelas värden i olika
                                         --moduler vilket nog inte borde ske
       NC_O <= '0';
-   end Behavioral;
+
+      seg0 <= '1';
+      seg1 <= '1';
+      seg2 <= '1';
+      seg3 <= '1';
+      seg4 <= '1';
+      seg5 <= '1';
+      seg6 <= '1';
+
+      led0 <= TFT_EN_O;
+      led1 <= TFT_DISP_O;
+      led2 <= '0';
+      led3 <= '0';
+      led4 <= '0';
+      led5 <= '0';
+      led6 <= '0';
+      led7 <= '0';
+    end Behavioral;
