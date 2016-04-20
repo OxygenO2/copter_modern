@@ -28,6 +28,7 @@ architecture Behavioral of CPU is
            result : out std_logic_vector(15 downto 0));
   end component;
 
+  -- Signals
   signal alu_op : std_logic_vector(2 downto 0);
   signal data_bus : std_logic_vector(15 downto 0);
   signal pc : std_logic_vector(15 downto 0);
@@ -45,13 +46,14 @@ architecture Behavioral of CPU is
   signal micro_instr : std_logic_vector(7 downto 0);
   signal micro_pc : unsigned(7 downto 0);
 
+  
   -- PMEM (Max is 65535 for 16 bit addresses)
   type ram_t is array (0 to 4096) of std_logic_vector(15 downto 0);
   signal pmem : ram_t := (others => "0000000000000000");
 
-    -- micro-MEM (Max is 255 for 8 bit addresses)
-  type micro_mem_t is array (0 to 255) of std_logic_vector(7 downto 0);
-  signal micro_mem : micro_mem_t := (others => "00000000");
+  -- micro-MEM (Max is 255 for 8 bit addresses)
+  type micro_mem_t is array (0 to 255) of std_logic_vector(23 downto 0);
+  signal micro_mem : micro_mem_t := (others => "000000000000000000000000");
 
   -- ROM (mod) (Includes all 4 mods, need to be updated with correct micro-addresses)
   type mod_rom_t is array (3 downto 0) of std_logic_vector(7 downto 0);
@@ -116,23 +118,24 @@ begin  -- Behavioral
 
 
   -- micro_pc
-  -- NOTE: MUST BE CHANGED TO COMPLETE CURRENT MICRO INSTRUCTION BEFORE HANDLING INTERRUPTS
-  --process(clk)
-  --begin
-  --  if rising_edge(clk) then
-  --    if reset = '1' then
-  --      micro_pc <= "00000000";
-  --    elsif collision = '1' then
-  --      micro_pc <= "10101010";   -- NOTE: MUST BE UPDATED WITH CORRECT MICRO ADDRESS
-  --    elsif input = '1' then
-  --      micro_pc <= "01010101";   -- NOTE: MUST BE UPDATED WITH CORRECT MICRO ADDRESS
-  --    elsif micro_mem(to_integer(unsigned(micro_pc)))(3 downto 0) = "1111"  then
-  --      -- The micro instruction tells the micro_pc to reset back to 0
-  --      micro_pc <= "00000000";
-  --    else
-  --      micro_pc <= micro_pc + 1;
-  --    end if;
-  --  end if;
-  --end process;
+  process(clk)
+  begin
+    if rising_edge(clk) then
+      if micro_mem(to_integer(unsigned(micro_pc)))(11 downto 8) = "0000"  then  -- micro_pc += 1
+        micro_pc <= micro_pc + 1;
+        
+      elsif micro_mem(to_integer(unsigned(micro_pc)))(11 downto 8) = "0001"  then --micro_pc = op
+        micro_pc <= unsigned(op_rom(to_integer(unsigned(ir(31 downto 26)))));
+        
+      elsif micro_mem(to_integer(unsigned(micro_pc)))(11 downto 8) = "0010"  then --micro_pc = mod
+         micro_pc <= unsigned(mod_rom(to_integer(unsigned(ir(31 downto 26)))));
+         
+      elsif micro_mem(to_integer(unsigned(micro_pc)))(11 downto 8) = "0011"  then --micro_pc = 0
+        micro_pc <= "00000000";
+      else
+        micro_pc <= micro_pc;
+      end if;
+    end if;
+  end process;
   
 end Behavioral;
