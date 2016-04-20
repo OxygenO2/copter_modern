@@ -20,14 +20,14 @@ entity GPU is
           clk_O : out  STD_LOGIC;
           disp : out  STD_LOGIC;
           bklt : out  STD_LOGIC;
-          vdden_O : out STD_LOGIC;
+          en_O : out STD_LOGIC;
           collision : out std_logic);
  
 end GPU;
 
 -- alla andra kretsar och saker
-architecture Behavioral of GPU is  
-
+architecture Behavioral of GPU is
+  
   component PIC_MEM
       port ( clk		: in std_logic;
          -- port 1
@@ -56,31 +56,9 @@ architecture Behavioral of GPU is
     
   end component;
 
-  component LCD_MOTOR
-   Port (
-         clk : in STD_LOGIC;
-         rst : in STD_LOGIC;
-         x: in integer;
-         y: in integer;
-         z: in STD_LOGIC_VECTOR (11 downto 0);
-         we : in std_logic;
-         wr_clk : in std_logic;
-         r : out  STD_LOGIC_VECTOR (7 downto 0);
-         g : out  STD_LOGIC_VECTOR (7 downto 0);
-         b : out  STD_LOGIC_VECTOR (7 downto 0);
-         de : out  STD_LOGIC;
-         clk_O : out  STD_LOGIC;
-         disp : out  STD_LOGIC;
-         bklt : out  STD_LOGIC; --PWM backlight control
-         vdden_O : out STD_LOGIC;
-         MSEL_I : in STD_LOGIC_VECTOR(3 downto 0)); -- Mode selection
-  
-  end component;
-
-  signal clk_div : unsigned(4 downto 0);
+  signal clk_div : unsigned(4 downto 0) := "00000";
   signal x_pixel : std_logic_vector(9 downto 0);
   signal y_pixel : std_logic_vector(8 downto 0);
-  signal GPU_clk : std_logic;
   signal PIC_MEM_we : std_logic;
   signal PIC_MEM_data2 : std_logic_vector(7 downto 0);
   signal PIXEL_CHOOSER_player_pixel : std_logic_vector(7 downto 0);
@@ -91,21 +69,39 @@ architecture Behavioral of GPU is
   signal out_pixel : std_logic_vector(7 downto 0);
 
 
-  signal LCD_rst : std_logic;
+  signal LCD_clk : std_logic;
+  signal LCD_rst : std_logic := '0';
   signal LCD_x: integer;
   signal LCD_y: integer;
-  signal LCD_z: STD_LOGIC_VECTOR (11 downto 0);
   signal LCD_we : std_logic;
-  signal LCD_wr_clk : std_logic;
   signal LCD_de : STD_LOGIC;
   signal LCD_clk_O : STD_LOGIC;
   signal LCD_disp : STD_LOGIC;
   signal LCD_bklt : STD_LOGIC; --PWM backlight control
-  signal LCD_vdden_O : STD_LOGIC;
+  signal LCD_en_O : STD_LOGIC;
   signal LCD_msel : STD_LOGIC_VECTOR(3 downto 0) := "1111"; -- Mode selection
                                                             -- 1111 för att starta
-
+                                                            -- (egentligen 1000)
   
+  constant CLOCKFREQ : natural := 9; --MHZ
+  constant TPOWERUP : natural := 1; --ms
+  constant TPOWERDOWN : natural := 1; --ms
+  constant TLEDWARMUP : natural := 200; --ms
+  constant TLEDCOOLDOWN : natural := 200; --ms
+  --Argumenten nedan var multiplicerade med CLOCKFREQ, men vår klocka är
+  --redan mod 9 när den kommer in
+  constant TLEDWARMUP_CYCLES : natural := natural(TLEDWARMUP*1000);
+  constant TLEDCOOLDOWN_CYCLES : natural := natural(TLEDCOOLDOWN*1000);
+  constant TPOWERUP_CYCLES : natural := natural(TPOWERUP*1000);
+  constant TPOWERDOWN_CYCLES : natural := natural(TPOWERDOWN*1000);	
+
+
+  type state_type is (stOff, stPowerUp, stLEDWarmup, stLEDCooldown, stPowerDown, stOn); 
+  signal state, nstate : state_type := stPowerDown;
+  signal waitCnt : natural range 0 to TLEDCOOLDOWN_CYCLES := 0;
+  signal waitCntEn : std_logic;
+  signal int_Bklt, int_De, clkStop : std_logic := '0';
+  signal int_R, int_G, int_B : std_logic_vector(7 downto 0);
 begin  -- Behavioral
   
 -- PIC_MEM component connection
@@ -128,30 +124,13 @@ begin  -- Behavioral
                               tile_pixel => PIXEL_CHOOSER_tile_pixel,
                               background_pixel => PIXEL_CHOOSER_background_pixel,
                               out_pixel => PIXEL_CHOOSER_out,
-                              collision => collision);
-
-  LCD : LCD_MOTOR port map (clk => clk,
-                            rst => LCD_rst,
-                            x => LCD_x,
-                            y => LCD_y,
-                            z => LCD_z,
-                            we => LCD_we,
-                            wr_clk => LCD_wr_clk,
-                            r => r,
-                            g => g,
-                            b => b,
-                            de => de,
-                            clk_O => clk_O,
-                            disp => disp,
-                            bklt => bklt,
-                            vdden_O => vdden_O,
-                            MSEL_I => LCD_msel);
+                              collision => collision); 
 
   --clk_divider
   process (clk)
   begin
     if rising_edge(clk) then
-      if (clk_div = 10) then
+      if (clk_div = CLOCKFREQ - 1) then
         clk_div <= (others => '0'); 
       else
         clk_div <= clk_div + 1;
@@ -159,13 +138,13 @@ begin  -- Behavioral
     end if;
   end process;
   
-  GPU_clk <= '1' when (clk_div = 10) else '0';
+  LCD_clk <= '1' when (clk_div = CLOCKFREQ - 1) else '0';
   
   --x_pixel_counter
   process (clk)
   begin
     if rising_edge(clk) then
-      if GPU_clk = '1' then
+      if LCD_clk = '1' then
         if (x_pixel = 524) then
           x_pixel <= (others => '0');
         else
@@ -180,7 +159,7 @@ begin  -- Behavioral
   process (clk)
   begin
     if rising_edge(clk) then
-      if GPU_clk = '1' and (x_pixel = 524) then
+      if LCD_clk = '1' and (x_pixel = 524) then
         if (y_pixel = 287) then
           y_pixel <= (others => '0');
         else
@@ -190,8 +169,113 @@ begin  -- Behavioral
     end if;
   end process; 
 
+
+
+
+
+
+
+
+  
+----------------------------------------------------------------------------------
+-- LCD MOTOR
+----------------------------------------------------------------------------------	
+
+--LCD & backlight power 
+  en_O <= '0' when state = stOff or state = stPowerDown else '1';
+
+--Display On/Off signal
+  disp <= '0' when state = stOff or state = stPowerUp or state = stPowerDown else '1';
+
+--Interface signals
+  de <= '0' when state = stOff or state = stPowerUp or state = stPowerDown else int_De;
+  r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_R;
+  g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_G;
+  b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_B;
+
+--Clock signal
+  clkStop <= '1' when state = stOff or state = stPowerUp or state = stPowerDown else '0';
+
+--Backlight adjust/enable
+  bklt <= int_Bklt when state = stOn else '0';
+
+--Wait States
+  waitCntEn <= '1' when (state = stPowerUp or state = stLEDWarmup or state = stLEDCooldown or state = stPowerDown) and (state = nstate) else '0';
+					
+  --Sync process
+  process (LCD_clk)
+   begin
+      if rising_edge(LCD_clk) then
+         state <= nstate;
+      end if;
+   end process;
+
+   --next state decode
+   process (state, waitCnt, LCD_msel)
+   begin
+      nstate <= state;
+      case (state) is
+        when stOff =>
+          if (LCD_msel(3) = '1' and LCD_rst = '0') then
+            nstate <= stPowerUp;
+          end if;
+        when stPowerUp => --turn power on first
+          if (waitCnt = TPOWERUP_CYCLES) then
+            nstate <= stLEDWarmup;
+          end if;
+        when stLEDWarmup => --turn on interface signals
+          if (waitCnt = TLEDWARMUP_CYCLES) then
+            nstate <= stOn;
+          end if;
+        when stOn => --turn on backlight too
+          if (LCD_msel(3) = '0' or LCD_rst = '1') then
+            nstate <= stLEDCooldown;
+          end if;
+        when stLEDCooldown =>
+          if (waitCnt = TLEDCOOLDOWN_CYCLES) then
+            nstate <= stPowerDown;
+          end if;
+        when stPowerDown => --turn off power last
+          if (waitCnt = TPOWERDOWN_CYCLES) then
+            nstate <= stOff;
+          end if; 
+      end case;      
+   end process;
+
+   --Process that pushes RGB-data
+   process(LCD_clk)
+     begin
+     if Rising_Edge(LCD_clk) then
+       if state = stOn then
+         if blank = '0' then
+           int_g <= PIXEL_CHOOSER_out(7 downto 5) & "00000";
+           int_r <= PIXEL_CHOOSER_out(4 downto 2) & "00000";
+           int_b <= PIXEL_CHOOSER_out(1 downto 0) & "000000";
+         else
+           int_g <= (others => '0');
+           int_r <= (others => '0');
+           int_b <= (others => '0');
+         end if;
+       else
+         out_pixel <= "UUUUUUUU";
+       end if;
+     end if;     
+   end process;
+     
+----------------------------------------------------------------------------------
+-- Wait Counter
+----------------------------------------------------------------------------------  
+   process(LCD_clk)
+   begin
+     if Rising_Edge(LCD_clk) then
+       if waitCntEn = '0' then
+         waitCnt <= 0;
+       else
+         waitCnt <= waitCnt + 1;
+       end if;
+     end if;
+   end process;
+
   blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
-
-  out_pixel <= PIXEL_CHOOSER_out when blank = '0' else (others => '0');
-
+  
 end Behavioral;

@@ -17,11 +17,11 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 
 entity lcd_motor is
    Port (
-         clk : in STD_LOGIC;
+         clk_mod_9 : in STD_LOGIC;
          rst : in STD_LOGIC;
-         x: in integer;
-         y: in integer;
-         z: in STD_LOGIC_VECTOR (11 downto 0);
+         x : in integer;
+         y : in integer;
+         z : in STD_LOGIC_VECTOR (11 downto 0);
          we : in std_logic;
          wr_clk : in std_logic;
          r : out  STD_LOGIC_VECTOR (7 downto 0);
@@ -42,10 +42,12 @@ architecture Behavioral of lcd_motor is
 	constant TPOWERDOWN : natural := 1; --ms
 	constant TLEDWARMUP : natural := 200; --ms
 	constant TLEDCOOLDOWN : natural := 200; --ms
-	constant TLEDWARMUP_CYCLES : natural := natural(CLOCKFREQ*TLEDWARMUP*1000);
-	constant TLEDCOOLDOWN_CYCLES : natural := natural(CLOCKFREQ*TLEDCOOLDOWN*1000);
-	constant TPOWERUP_CYCLES : natural := natural(CLOCKFREQ*TPOWERUP*1000);
-	constant TPOWERDOWN_CYCLES : natural := natural(CLOCKFREQ*TPOWERDOWN*1000);	
+        --Argumenten nedan var multiplicerade med CLOCKFREQ, men vår klocka är
+        --redan mod 9 när den kommer in
+	constant TLEDWARMUP_CYCLES : natural := natural(TLEDWARMUP*1000);
+	constant TLEDCOOLDOWN_CYCLES : natural := natural(TLEDCOOLDOWN*1000);
+	constant TPOWERUP_CYCLES : natural := natural(TPOWERUP*1000);
+	constant TPOWERDOWN_CYCLES : natural := natural(TPOWERDOWN*1000);	
 
 
 ----------------------------------------------------------------------------------
@@ -121,6 +123,13 @@ begin
       end case;      
    end process;
 
+   --Process that pushes RGB-data
+   process(clk)
+     if Rising_Edge(clk) then
+       
+     end;     
+   end process;
+     
 ----------------------------------------------------------------------------------
 -- Wait Counter
 ----------------------------------------------------------------------------------  
