@@ -13,6 +13,14 @@ entity GPU is
           sprite_x : in integer;
           sprite_y : in integer;
           cpu_data : in std_logic_vector(7 downto 0);
+          r : out  STD_LOGIC_VECTOR (7 downto 0);
+          g : out  STD_LOGIC_VECTOR (7 downto 0);
+          b : out  STD_LOGIC_VECTOR (7 downto 0);
+          de : out  STD_LOGIC;
+          clk_O : out  STD_LOGIC;
+          disp : out  STD_LOGIC;
+          bklt : out  STD_LOGIC;
+          vdden_O : out STD_LOGIC;
           collision : out std_logic);
  
 end GPU;
@@ -89,15 +97,13 @@ architecture Behavioral of GPU is
   signal LCD_z: STD_LOGIC_VECTOR (11 downto 0);
   signal LCD_we : std_logic;
   signal LCD_wr_clk : std_logic;
-  signal LCD_r : STD_LOGIC_VECTOR (7 downto 0);
-  signal LCD_g : STD_LOGIC_VECTOR (7 downto 0);
-  signal LCD_b : STD_LOGIC_VECTOR (7 downto 0);
   signal LCD_de : STD_LOGIC;
   signal LCD_clk_O : STD_LOGIC;
   signal LCD_disp : STD_LOGIC;
   signal LCD_bklt : STD_LOGIC; --PWM backlight control
   signal LCD_vdden_O : STD_LOGIC;
-  signal LCD_msel : STD_LOGIC_VECTOR(3 downto 0); -- Mode selection
+  signal LCD_msel : STD_LOGIC_VECTOR(3 downto 0) := "1111"; -- Mode selection
+                                                            -- 1111 för att starta
 
   
 begin  -- Behavioral
@@ -131,14 +137,14 @@ begin  -- Behavioral
                             z => LCD_z,
                             we => LCD_we,
                             wr_clk => LCD_wr_clk,
-                            r => LCD_r,
-                            g => LCD_g,
-                            b => LCD_b,
-                            de => LCD_de,
-                            clk_O => LCD_clk_O,
-                            disp => LCD_disp,
-                            bklt => LCD_bklt,
-                            vdden_O => LCD_vdden_O,
+                            r => r,
+                            g => g,
+                            b => b,
+                            de => de,
+                            clk_O => clk_O,
+                            disp => disp,
+                            bklt => bklt,
+                            vdden_O => vdden_O,
                             MSEL_I => LCD_msel);
 
   --clk_divider
