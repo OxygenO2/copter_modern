@@ -41,11 +41,31 @@ architecture Behavioral of PIC_MEM is
   
   -- tile_grid type (61 * 34 = 2074)
   type tile_grid is array (0 to 2074) of std_logic;
-  signal obstacle_grid : tile_grid := (others => '0');
+  signal obstacle_grid : tile_grid := ('0','1','0','0','1','0','1','0','0','1','0','1','0','0','1','0',
+                                       '1','0','0','1','0','1','0','0','1','0','1','0','0','1','0','1',
+                                       '0','0','1','0','1','0','0','1','0','1','0','0','1','0','1','0',
+                                       '0','1','0','1','0','0','1','0','1','0','0','1','0','1','0','0',others =>'0');
 
   -- Tile_memory type
   type tile_ram is array (0 to 127) of std_logic_vector(7 downto 0);
-  signal tile_mem : tile_ram := (others => "00000000");
+  signal tile_mem : tile_ram := 
+		( x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- space
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+
+		  x"FF",x"FF",x"00",x"00",x"00",x"FF",x"FF",x"FF",	-- A
+		  x"FF",x"00",x"00",x"FF",x"00",x"00",x"FF",x"FF",
+		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
+		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
+		  x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"FF",
+		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
+		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
+		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF");
 
   --sprite_memory type
   type sprite_ram is array (0 to 255) of std_logic_vector(7 downto 0);
