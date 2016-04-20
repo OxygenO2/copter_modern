@@ -100,9 +100,11 @@ architecture Behavioral of GPU is
   signal state, nstate : state_type := stPowerDown;
   signal waitCnt : natural range 0 to TLEDCOOLDOWN_CYCLES := 0;
   signal waitCntEn : std_logic;
+
   signal int_Bklt : std_logic := '1';
   signal int_De, clkStop : std_logic := '0';
-  signal int_R, int_G, int_B : std_logic_vector(7 downto 0);
+  signal int_r, int_g, int_b : std_logic_vector(7 downto 0);
+
 begin  -- Behavioral
   
 -- PIC_MEM component connection
@@ -190,10 +192,17 @@ begin  -- Behavioral
 
 --Interface signals
   de <= '0' when state = stOff or state = stPowerUp or state = stPowerDown else int_De;
+<<<<<<< HEAD
   r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_R;
   g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_G;
   b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_B;
   
+=======
+  r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_r;
+  g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_g;
+  b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_b;
+
+>>>>>>> 7e783ea83ef37bbf44f74ef5b11d7b30cd9ad922
 --Clock signal
   clkStop <= '1' when state = stOff or state = stPowerUp or state = stPowerDown else '0';
 
@@ -258,7 +267,9 @@ begin  -- Behavioral
            int_b <= (others => '0');
          end if;
        else
-         out_pixel <= "UUUUUUUU";
+           int_g <= (others => 'U');
+           int_r <= (others => 'U');
+           int_b <= (others => 'U');
        end if;
      end if;     
    end process;
