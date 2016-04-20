@@ -17,9 +17,9 @@ entity GPU is
           g : out  STD_LOGIC_VECTOR (7 downto 0);
           b : out  STD_LOGIC_VECTOR (7 downto 0);
           de : out  STD_LOGIC;
-          clk_O : out  STD_LOGIC;
-          disp : out  STD_LOGIC;
-          bklt : out  STD_LOGIC;
+          clk_O : out STD_LOGIC;
+          disp : out STD_LOGIC;
+          bklt : out STD_LOGIC;
           en_O : out STD_LOGIC;
           collision : out std_logic);
  
@@ -88,7 +88,7 @@ architecture Behavioral of GPU is
   constant TPOWERDOWN : natural := 1; --ms
   constant TLEDWARMUP : natural := 200; --ms
   constant TLEDCOOLDOWN : natural := 200; --ms
-  --Argumenten nedan var multiplicerade med CLOCKFREQ, men vår klocka är
+  --Argumenten neppdan var multiplicerade med CLOCKFREQ, men vår klocka är
   --redan mod 9 när den kommer in
   constant TLEDWARMUP_CYCLES : natural := natural(TLEDWARMUP*1000);
   constant TLEDCOOLDOWN_CYCLES : natural := natural(TLEDCOOLDOWN*1000);
@@ -100,7 +100,8 @@ architecture Behavioral of GPU is
   signal state, nstate : state_type := stPowerDown;
   signal waitCnt : natural range 0 to TLEDCOOLDOWN_CYCLES := 0;
   signal waitCntEn : std_logic;
-  signal int_Bklt, int_De, clkStop : std_logic := '0';
+  signal int_Bklt : std_logic := '1';
+  signal int_De, clkStop : std_logic := '0';
   signal int_R, int_G, int_B : std_logic_vector(7 downto 0);
 begin  -- Behavioral
   
@@ -192,7 +193,7 @@ begin  -- Behavioral
   r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_R;
   g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_G;
   b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_B;
-
+  
 --Clock signal
   clkStop <= '1' when state = stOff or state = stPowerUp or state = stPowerDown else '0';
 
@@ -276,6 +277,7 @@ begin  -- Behavioral
      end if;
    end process;
 
-  blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
-  
+   blank <= '1' when x_pixel > 480 or y_pixel > 272 else '0';
+   int_De <= not blank;
+   
 end Behavioral;
