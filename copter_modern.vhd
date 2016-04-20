@@ -119,7 +119,7 @@ begin  -- Behavioral
       TP_DCLK_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
       TP_DOUT_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
       TP_PENIRQ_O <= '0';                   --Dummyvärde, vet inte vad det här gör 
-      LED_EN_O <= '0';                   --Dummyvärde, vet inte vad det här gör.
+      LED_EN_O <= '1';                   --Dummyvärde, vet inte vad det här gör.
                                          --Rimligtvis ska LED vara enabled dock
       TFT_CLK_O <= clk;                 --Den här tilldelas värden i olika
                                         --moduler vilket nog inte borde ske
@@ -130,12 +130,12 @@ begin  -- Behavioral
       TFT_DISP_O <= disp_debug;
       TFT_BKLT_O <= bklt_debug;
       
-      seg0 <= '1';
-      seg1 <= '1';
-      seg2 <= '1';
-      seg3 <= '1';
-      seg4 <= '1';
-      seg5 <= '1';
+      seg0 <= '0';
+      seg1 <= '0';
+      seg2 <= '0';
+      seg3 <= '0';
+      seg4 <= '0';
+      seg5 <= '0';
       seg6 <= '1';
 
       led0 <= en_debug;

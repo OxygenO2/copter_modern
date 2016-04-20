@@ -3,6 +3,7 @@
 -- library declaration
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;            -- basic IEEE library
+--use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
@@ -101,11 +102,31 @@ architecture Behavioral of GPU is
   signal waitCnt : natural range 0 to TLEDCOOLDOWN_CYCLES := 0;
   signal waitCntEn : std_logic;
 
-  signal int_Bklt : std_logic := '1';
+  signal int_Bklt : std_logic;
   signal int_De, clkStop : std_logic := '0';
   signal int_r, int_g, int_b : std_logic_vector(7 downto 0);
 
+--  signal bklt_counter : unsigned(31 downto 0) := "00000000000000000000000000000000";
+
+  
 begin  -- Behavioral
+
+--    Backlight test
+--   process(clk)
+--   begin
+--     if rising_edge(clk) then
+--       if bklt_counter > 10000 then    -- 10000 is known to work
+--         bklt_counter <= "00000000000000000000000000000000";
+--         if int_Bklt = '1' then
+--           int_Bklt <= '0';
+--         else
+--           int_Bklt <= '1';
+--         end if;
+--       else
+--         bklt_counter <= bklt_counter + "00000000000000000000000000000001";
+--       end if;
+--     end if;
+--   end process;
   
 -- PIC_MEM component connection
   PM : PIC_MEM port map(clk=>clk,
@@ -192,17 +213,12 @@ begin  -- Behavioral
 
 --Interface signals
   de <= '0' when state = stOff or state = stPowerUp or state = stPowerDown else int_De;
-<<<<<<< HEAD
-  r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_R;
-  g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_G;
-  b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_B;
-  
-=======
+
   r <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_r;
   g <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_g;
   b <= (others => '0') when state = stOff or state = stPowerUp or state = stPowerDown else int_b;
 
->>>>>>> 7e783ea83ef37bbf44f74ef5b11d7b30cd9ad922
+
 --Clock signal
   clkStop <= '1' when state = stOff or state = stPowerUp or state = stPowerDown else '0';
 

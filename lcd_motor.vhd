@@ -61,6 +61,9 @@ signal waitCntEn : std_logic;
 signal int_Bklt, int_De, clkStop : std_logic := '0';
 signal int_R, int_G, int_B : std_logic_vector(7 downto 0);
 
+
+signal bklt_counter : unsigned(17 downto 0);  -- Test backlight
+        
 begin
 --LCD & backlight power 
   vdden_O <= '0' when state = stOff or state = stPowerDown else '1';
@@ -126,10 +129,31 @@ begin
    --Process that pushes RGB-data
    process(clk)
      if Rising_Edge(clk) then
-       
-     end;     
+       int_Bklt <= '1';
+     end if;
+     if falling_edge(clk) then
+       int_Bklt <= '0';
+     end if;
    end process;
-     
+
+
+   --int_Bklt <= clk;
+   ---- Backlight test
+   --process(clk)
+   --begin
+   --  if rising_edge(clk) then
+   --    if bklt_counter > 250000 then
+   --      bklt_counter <= 0;
+   --      if int_Bklt = '1' then
+   --        int_Bklt <= '0';
+   --      else
+   --        int_Bklt <= '1';
+   --      end if;
+   --    else
+   --      bklt_counter = bklt_counter + 1;
+   --    end if;
+   --  end if;
+   --end process;
 ----------------------------------------------------------------------------------
 -- Wait Counter
 ----------------------------------------------------------------------------------  
